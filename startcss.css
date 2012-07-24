@@ -1,0 +1,14 @@
+@charset "utf-8";
+/* CSS Document */
+
+.studyplay_starBg{
+	 background:url(start.gif) 0 -22px;position:absolute; top:0; left:0; height:22px; padding:0px; cursor:pointer;
+	}
+.studyplay_starovering{
+	background:url(start.gif); height:22px; position:absolute; top:0; left:0;
+}
+.studyplay_starON{
+	 position:absolute; top:0; left:0; height:22px;
+}
+
+

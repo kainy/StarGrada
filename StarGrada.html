@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>StarGrada</title>
+<script src="jquery.js"></script>
+<!-- <script src="http://l.cuobian.com/servtools/lib/mootools+.js"></script> -->
+<script src="http://ajax.googleapis.com/ajax/libs/mootools/1.4.0/mootools-yui-compressed.js"></script>
+<link href="startcss.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<script type="text/javascript">
+<!-- jQuery 实现 -->
+$.fn.studyplay_star = function (options, callback) {
+	//默认设置
+	var settings = {
+		Max : 10,
+		Cur : 2.5,
+		StarWidth : 23,
+		Enabled : true,
+		Half : true
+	};
+	if (options) {
+		jQuery.extend(settings, options);
+	};
+	var starWidth= (settings.Half)? settings.StarWidth/ 2 :settings.StarWidth;
+	var container = jQuery(this);
+	container.css({
+		"position" : "relative"
+	})
+	.html('<ul class="studyplay_starBg"></ul>')
+	.find('.studyplay_starBg').width(settings.Max * starWidth)
+	.html('<li class="studyplay_starovering" style="width:' + settings.Cur * settings.StarWidth + 'px; z-index:0;" id="studyplay_current"></li>');
+	if (settings.Enabled) {
+		var ListArray = "";
+		for (k = 1; k < settings.Max+ 1; k++) {
+			ListArray += '<li class="studyplay_starON" style="width:' + starWidth* k + 'px;z-index:' + (settings.Max - k) + ';" title=' + k + '分></li>';
+		}
+		
+		container.find('.studyplay_starBg').append(ListArray)
+		container.find('.studyplay_starON').hover(function () {
+			$(this).removeClass('studyplay_starON').addClass("studyplay_starovering");
+			$("#studyplay_current").hide();
+		},
+			function () {
+			$(this).removeClass('studyplay_starovering').addClass("studyplay_starON");
+			$("#studyplay_current").show();
+		})
+		.click(function () {
+			var studyplay_count = settings.Max - $(this).css("z-index");
+
+				$("#studyplay_current").width(studyplay_count * starWidth)
+
+			//回调函数
+			if (typeof callback == 'function') {
+
+					callback(studyplay_count);
+			}
+		})
+	}
+}
+$(document).ready(function () {
+	$("#JQ").studyplay_star({}, function (value) {
+		alert(value)
+	});
+});
+
+
+<!-- Mootools 实现 -->
+var StarGrada= new Class({
+	Implements: Options,
+	options: {
+		max: 10, //总分
+		cur: 2.5, //初始评分（得分）
+		starWidth: 23, //星宽度
+		enabled: true, //是否可评分（false则仅显示得分）
+		half: true, //半颗星
+		callback: function(){} //回调函数
+	}, 
+	initialize: function(container, options){
+		this.setOptions(options);
+		this._starWidth= (this.options.half)? this.options.starWidth/ 2: this.options.starWidth;
+		this._elContainer= document.id(container);
+		this._elStarBg= new Element('ul.studyplay_starBg').setStyle('width', this.options.max* this._starWidth);
+		this._elCur= new Element('li.studyplay_starovering.studyplay_current', {
+			'styles': {
+				'width': this.options.cur * this.options.starWidth,
+				'z-index': 0
+			}
+		});
+		this._elContainer.setStyle('position', 'relative').adopt(this._elStarBg.adopt(this._elCur));
+		this.options.enabled&& this.process();
+	},
+	process: function(){
+		var strStar= '';
+		for (k= 1; k< this.options.max+ 1; k++){
+			strStar+= '<li class="studyplay_starON" style="width:' + this._starWidth* k + 'px;z-index:' + (this.options.max - k) + ';" title=' + k + '分></li>';
+		}
+		this._elStarBg.innerHTML+= strStar;
+		
+		var elCur= this._elContainer.getElement('.studyplay_current');
+		this._elContainer.getElements('.studyplay_starON').addEvents({
+			'mouseover': function(o){
+				o.target.removeClass('studyplay_starON').addClass('studyplay_starovering');
+				elCur.setStyle('display', 'none');
+			}.bind(this),
+			'mouseout': function(o){
+				o.target.removeClass('studyplay_starovering').addClass('studyplay_starON');
+				elCur.setStyle('display', 'list-item');
+			}.bind(this),
+			'click': function(o){
+				var numCount= this.options.max- o.target.getStyle('z-index');
+				elCur.setStyle('width', numCount* this._starWidth);
+				typeof this.options.callback=== 'function'&& this.options.callback.call(this, numCount);
+			}.bind(this)
+		});
+	}
+});
+window.onload= function(){
+	new StarGrada('Moo', {
+		callback: function(value){
+			alert(value);
+		}
+	});
+}
+</script>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+	<div id="Moo"></div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+	<div id="JQ"></div>
+</body>
+</html>
